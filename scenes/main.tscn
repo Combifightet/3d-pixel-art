@@ -1,16 +1,24 @@
-[gd_scene load_steps=19 format=3 uid="uid://omjjygspxutj"]
+[gd_scene load_steps=23 format=3 uid="uid://omjjygspxutj"]
 
 [ext_resource type="Script" uid="uid://l706aicvakf2" path="res://scripts/main.gd" id="1_o5qli"]
-[ext_resource type="Shader" uid="uid://dlxl1ys88d7o" path="res://shaders/edge_detection.gdshader" id="2_0wfyh"]
+[ext_resource type="Shader" uid="uid://dlxl1ys88d7o" path="res://shaders/edge_detection_Compatibility.gdshader" id="2_0wfyh"]
 [ext_resource type="Shader" uid="uid://coxtcp3p28on3" path="res://shaders/grid.gdshader" id="3_sugp2"]
+[ext_resource type="Script" uid="uid://bw6pv1fo30dnv" path="res://scripts/normal_buff_gen.gd" id="4_jyhfs"]
+[ext_resource type="Shader" uid="uid://c7ku25mckhl6y" path="res://shaders/normal.gdshader" id="5_tbgi4"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_tbgi4"]
+viewport_path = NodePath("NormalViewportContainer/NormalViewport")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_sugp2"]
-render_priority = 0
+resource_local_to_scene = true
+render_priority = -1
 shader = ExtResource("2_0wfyh")
-shader_parameter/lineHighlight = 0.1999999955296
-shader_parameter/lineShadow = 0.5499999877064
+shader_parameter/NORMAL_TEXTURE = SubResource("ViewportTexture_tbgi4")
+shader_parameter/lineHighlight = 0.2
+shader_parameter/lineShadow = 0.55
 
 [sub_resource type="QuadMesh" id="QuadMesh_jyhfs"]
+resource_local_to_scene = true
 material = SubResource("ShaderMaterial_sugp2")
 flip_faces = true
 size = Vector2(2, 2)
@@ -118,6 +126,10 @@ _data = {
 &"anim_loop": SubResource("Animation_sugp2")
 }
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tefeu"]
+render_priority = 0
+shader = ExtResource("5_tbgi4")
+
 [node name="Main" type="Node3D"]
 script = ExtResource("1_o5qli")
 
@@ -202,3 +214,22 @@ libraries = {
 &"": SubResource("AnimationLibrary_jyhfs")
 }
 autoplay = "anim_loop"
+
+[node name="NormalViewportContainer" type="SubViewportContainer" parent="."]
+texture_filter = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+stretch_shrink = 5
+
+[node name="NormalViewport" type="SubViewport" parent="NormalViewportContainer" node_paths=PackedStringArray("main_scene_root", "main_camera")]
+handle_input_locally = false
+size = Vector2i(230, 129)
+render_target_update_mode = 4
+script = ExtResource("4_jyhfs")
+main_scene_root = NodePath("../../PixelViewportContainer/PixelViewport/Level")
+main_camera = NodePath("../../PixelViewportContainer/PixelViewport/Camera3D")
+normal_shader = SubResource("ShaderMaterial_tefeu")
